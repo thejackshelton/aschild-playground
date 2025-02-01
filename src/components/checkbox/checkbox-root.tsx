@@ -1,5 +1,6 @@
 import {
   $,
+  JSXChildren,
   JSXNode,
   JSXOutput,
   type PropsOf,
@@ -38,73 +39,15 @@ type InternalCheckboxRootProps = {
   getChildren$?: QRL<() => JSXOutput>;
 };
 
+declare global {
+  var checkboxChildren: JSXChildren;
+}
+
 export const CheckboxRoot = ({
   children,
   ...rest
 }: PublicCheckboxRootProps) => {
-  const processNode = (node: any): any => {
-    if (!node || typeof node !== "object") return node;
-
-    console.log("Processing node:", {
-      type: node.type,
-      isFunction: typeof node.type === "function",
-      hasName: "name" in node.type,
-      name: node.type?.name,
-      children: node.children,
-      props: node.props,
-    });
-
-    const processedNode = { ...node };
-
-    if (
-      typeof node.type === "function" &&
-      (!("name" in node.type) || node.type.name !== "QwikComponent") &&
-      !("serializable-data" in node.type)
-    ) {
-      const originalFn = node.type;
-      console.log("Found inline component:", {
-        originalFn,
-        fnName: originalFn.name,
-        fnString: originalFn.toString(),
-        hasSerializableData: "serializable-data" in originalFn,
-      });
-
-      processedNode.type = implicit$FirstArg(originalFn);
-
-      console.log("Wrapped inline component:", {
-        originalType: originalFn,
-        newType: processedNode.type,
-        newTypeString: processedNode.type.toString(),
-        hasSerializableData: "serializable-data" in processedNode.type,
-      });
-    }
-
-    // Process children recursively
-    if (processedNode.children) {
-      if (Array.isArray(processedNode.children)) {
-        processedNode.children = processedNode.children.map(processNode);
-      } else {
-        processedNode.children = processNode(processedNode.children);
-      }
-    }
-
-    // Process props that might contain JSX
-    if (processedNode.props) {
-      const processedProps = { ...processedNode.props };
-      Object.entries(processedProps).forEach(([key, value]) => {
-        if (value && typeof value === "object" && "type" in value) {
-          processedProps[key] = processNode(value);
-        }
-      });
-      processedNode.props = processedProps;
-    }
-
-    const result = processedNode;
-    console.log("Processed result:", result);
-    return result;
-  };
-
-  processNode(children);
+  globalThis.checkboxChildren = children;
 
   return <CheckboxBase {...rest}>{children}</CheckboxBase>;
 };
@@ -123,10 +66,12 @@ export const CheckboxBase = component$(
       value,
       ...rest
     } = props;
+
     const isCheckedSig = useBoundSignal<boolean | "mixed">(
       givenCheckedSig,
       checked ?? false
     );
+
     const isInitialLoadSig = useSignal(true);
     const isDisabledSig = useComputed$(() => props.disabled);
     const isErrorSig = useSignal(false);
