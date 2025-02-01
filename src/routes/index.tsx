@@ -1,18 +1,24 @@
-import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
+import { component$, useStyles$ } from "@builder.io/qwik";
+import { Checkbox } from "~/components/checkbox";
 
 export default component$(() => {
+  useStyles$(styles);
+
   return (
-    <>
-      <h1>Hi 👋</h1>
-      <div>
-        Can't wait to see what you build with qwik!
-        <br />
-        Happy coding.
-      </div>
-    </>
+    <Checkbox.Root>
+      <Checkbox.Trigger class="checkbox-trigger">
+        <Checkbox.Indicator class="checkbox-indicator">
+          <LuCheck />
+        </Checkbox.Indicator>
+      </Checkbox.Trigger>
+    </Checkbox.Root>
   );
 });
+
+import { LuCheck } from "@qwikest/icons/lucide";
+// example styles
+import styles from "./checkbox.css?inline";
 
 export const head: DocumentHead = {
   title: "Welcome to Qwik",
