@@ -8,8 +8,10 @@ export default component$(() => {
   return (
     <Checkbox.Root>
       <Checkbox.Trigger class="checkbox-trigger">
-        <Checkbox.Indicator class="checkbox-indicator">
-          <LuCheck />
+        <Checkbox.Indicator class="checkbox-indicator" asChild>
+          <div data-testing-123>
+            <LuCheck />
+          </div>
         </Checkbox.Indicator>
       </Checkbox.Trigger>
     </Checkbox.Root>
