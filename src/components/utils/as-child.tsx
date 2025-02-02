@@ -11,6 +11,8 @@ export function useChild(allJsx: JSXChildren) {
   const id = useId();
 
   // we need to do this because of re-renders, and because signals and props can't hold inline component jsx due to serialization :/
+
+  // but now it seems we are returning the stale prop values
   if (!globalThis.__AS_CHILD_RESULTS__) {
     globalThis.__AS_CHILD_RESULTS__ = new Map();
   }
