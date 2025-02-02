@@ -28,29 +28,23 @@ export function useChild(allJsx: JSXChildren) {
     }
 
     if (asChildElement) {
-      console.log("HELLO?");
       const children = asChildElement.props.children;
-
-      if (children.length > 1) {
-        throw new Error("Qwik Design System: asChild can only have one child.");
-      }
-
-      // If type is a string, it's an HTML element, otherwise it's a component
-      const childType =
-        typeof children.type === "string"
-          ? children.type
-          : children.props.children.type;
-
-      console.log("child type: ", childType);
 
       const mergedProps = {
         ...asChildElement.props,
         ...fallbackJsx.props,
         asChild: undefined,
-        children: <Slot />,
+        children:
+          typeof children.type === "string"
+            ? children.props.children
+            : children.props.children.props.children,
       };
 
-      return jsx(childType, mergedProps);
+      // Return the children with merged props
+      return {
+        ...children,
+        props: mergedProps,
+      };
     } else {
       return fallbackJsx;
     }
